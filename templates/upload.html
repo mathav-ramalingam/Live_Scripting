@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Section 1 - Transcribe Audio File</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='upload.css') }}">
+</head>
+
+<body>
+    <nav>
+        <h1>Voice Script - File Transcription</h1>
+    </nav>
+    <div class="container">
+        <h1>Upload an Audio File to Transcribe</h1>
+        <p>This tool converts speech from an audio file into text.</p>
+
+        <form id="uploadForm">
+            <label for="audioFile">Upload Audio File (.mp3, .wav, .m4a):</label>
+            <input type="file" id="audioFile" name="audio" accept="audio/*" required>
+            
+            <div class="language-selectors">
+                <div>
+                    <label for="source_language">Input Audio Language:</label>
+                    <select id="source_language" name="source_language" required>
+                        <option value="en">English</option>
+                        <option value="ta">Tamil</option>
+                        <option value="hi">Hindi</option>
+                        <option value="kn">Kannada</option>
+                        <option value="te">Telugu</option>
+                        <option value="ml">Malayalam</option>
+                        <option value="bn">Bengali</option>
+                        <option value="ur">Urdu</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="language">Output Script Language:</label>
+                    <select id="language" name="language" required>
+                        <option value="ta">Tamil</option>
+                        <option value="en">English</option>
+                        <option value="hi">Hindi</option>
+                        <option value="kn">Kannada</option>
+                        <option value="te">Telugu</option>
+                        <option value="ml">Malayalam</option>
+                        <option value="bn">Bengali</option>
+                        <option value="ur">Urdu</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn">Transcribe</button>
+        </form>
+
+        <div id="results" style="display: none;">
+            <h2>Transcription Result</h2>
+            <div id="transcriptionBox" class="dialog-box"></div>
+            <a id="downloadLink" href="#" style="display: none;" download>Download Script (.txt)</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(this);
+            const submitBtn = document.getElementById('submitBtn');
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Processing...';
+
+            // Hide previous results
+            document.getElementById('transcriptionBox').innerText = '';
+            document.getElementById('downloadLink').style.display = 'none';
+
+            fetch('/process_file', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error) });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('transcriptionBox').innerText = data.transcription;
+
+                    // Correctly set the href attribute and make the link visible
+                    const downloadLink = document.getElementById('downloadLink');
+                    downloadLink.href = data.download_link;
+                    downloadLink.style.display = 'block';
+
+                    document.getElementById('results').style.display = 'block';
+                })
+                .catch(error => {
+                    alert('An error occurred: ' + error.message);
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Transcribe';
+                });
+        });
+    </script>
+</body>
+
+</html>

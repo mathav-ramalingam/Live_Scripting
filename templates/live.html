@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Section 2 - Live Scripting</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='live.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+
+<body>
+    <nav>
+        <h1>Voice Script - Live Scripting & Translation</h1>
+    </nav>
+    <div class="container">
+        <h1>Live Voice Translation</h1>
+        <p>Start recording, speak, and see the final translation appear after you stop.</p>
+
+        <div class="language-selectors">
+            <div>
+                <label for="source_lang">Your Spoken Language (Input):</label>
+                <select id="source_lang" name="source_lang" required>
+                    <option value="IN">English (India)</option>
+                    <option value="ta">Tamil</option>
+                    <option value="hi">Hindi</option>
+                    <option value="kn">Kannada</option>
+                </select>
+            </div>
+            <div>
+                <label for="target_lang">Script Language (Output):</label>
+                <select id="target_lang" name="target_lang" required>
+                    <option value="ta">Tamil</option>
+                    <option value="en">English (India)</option>
+                    <option value="hi">Hindi</option>
+                    <option value="kn">Kannada</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="recordingControls">
+            <button id="startBtn">Start Recording 🔴</button>
+            <button id="stopBtn" disabled>Stop Recording ⏹️</button>
+            <p id="status">Press 'Start Recording'</p>
+        </div>
+
+        <div id="results" style="display: none;">
+            <h2>Final Translated Script</h2>
+            <div id="translationBox" class="dialog-box"></div>
+            <a id="downloadLink" href="#" style="display: none;" download>Download Script (.txt)</a>
+        </div>
+    </div>
+
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const statusEl = document.getElementById('status');
+        const translationBox = document.getElementById('translationBox');
+        let mediaRecorder;
+        let socket;
+
+        startBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+
+                socket = io();
+
+                socket.on('connect', () => {
+                    console.log('WebSocket connected!');
+                    socket.emit('start_live_session', {
+                        source_lang: document.getElementById('source_lang').value,
+                        target_lang: document.getElementById('target_lang').value
+                    });
+
+                    // Start recording only after the server confirms the session
+                    socket.on('session_started', () => {
+                        mediaRecorder.start(2000); // Send audio chunks every 2 seconds
+                        startBtn.disabled = true;
+                        stopBtn.disabled = false;
+                        statusEl.innerText = "Recording... Speak now.";
+                        translationBox.innerText = "Recording in progress...";
+                        document.getElementById('results').style.display = 'block';
+                        document.getElementById('downloadLink').style.display = 'none';
+                    });
+                });
+
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        socket.emit('audio_chunk', event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    stream.getTracks().forEach(track => track.stop());
+                    statusEl.innerText = "Processing... Please wait for the final result.";
+                    socket.emit('end_live_session');
+                };
+
+                socket.on('final_translation_update', (data) => {
+                    translationBox.innerText = data.translated_text;
+                    statusEl.innerText = "Session ended. Press 'Start Recording' for a new session.";
+                });
+
+                socket.on('download_ready', (data) => {
+                    const downloadLink = document.getElementById('downloadLink');
+                    if (data.download_link) {
+                        downloadLink.href = data.download_link;
+                        downloadLink.style.display = 'block';
+                    }
+                    socket.disconnect(); // Disconnect after getting the final link
+                });
+
+            } catch (error) {
+                alert("Could not start recording. Please grant microphone permissions.");
+                console.error("Microphone access error:", error);
+            }
+        });
+
+        stopBtn.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        });
+    </script>
+</body>
+
+</html>

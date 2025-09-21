@@ -1,0 +1,6 @@
+Flask>=2.0
+pydub>=0.25
+whisper
+googletrans==4.0.0-rc1
+
+pip install deep-translator
