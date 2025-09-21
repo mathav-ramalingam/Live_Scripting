@@ -26,7 +26,10 @@ os.makedirs(TRANSCRIPTS_FOLDER, exist_ok=True)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
 
+
+# whisper_model = whisper.load_model("small", device=device)
 whisper_model = whisper.load_model("medium", device=device)
+# whisper_model = whisper.load_model("small", device=device)
 
 # Dictionary to store audio chunks and other session data
 session_data = {}
@@ -36,7 +39,7 @@ def transcribe_audio(audio_path: str, language: str) -> str:
     """Transcribes audio using Whisper."""
     try:
         # Pass the detected language code to the transcribe model
-        result = whisper_model.transcribe(audio_path, language=language)
+        result = whisper_model.transcribe(audio_path, language=language, fp16=False)
         return result["text"]
     except Exception as e:
         print(f"Transcription failed: {e}")
@@ -121,10 +124,26 @@ def process_audio_file():
         audio = whisper.load_audio(temp_wav_path)
 
         # Step 5: Transcribe the audio using the user-selected source language
-        transcription = transcribe_audio(audio, source_lang_code)
+        if source_lang_code == "ta":
+            result = whisper_model.transcribe(
+            audio,
+            language=source_lang_code,   # Lock source language (Tamil = "ta")
+            task="transcribe",           # Don’t auto-translate
+            fp16=False,                  # Prevent slowdown on CPU
+            initial_prompt="இது தமிழ் உரையாடல்." if source_lang_code == "ta" else None
+            )
+            transcription = result["text"]
+            print("transcribe success(ta)")
+        else:
+            transcription = transcribe_audio(audio, source_lang_code)
+            print("transcribe success")
+
         
         # Step 6: Translate the transcription to the user's selected target language
-        translation = translate_text(transcription, source_lang_code, target_lang)
+        if source_lang_code != target_lang:
+            translation = translate_text(transcription, source_lang_code, target_lang)
+        else:
+            translation = transcription
 
         # Combine original and translated text for the file
         combined_text = f"Original ({source_lang_code}): {transcription}\n\nTranslated ({target_lang}): {translation}"
