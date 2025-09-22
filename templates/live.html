@@ -1,52 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ta">
 
 <head>
     <meta charset="UTF-8">
-    <title>Section 2 - Live Scripting</title>
+    <title>நேரடி உரை மூலம் உரை மாற்றல்</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='live.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 
 <body>
     <nav>
-        <h1>Voice Script - Live Scripting & Translation</h1>
-    </nav>
-    <div class="container">
-        <h1>Live Voice Translation</h1>
-        <p>Start recording, speak, and see the final translation appear after you stop.</p>
+        <a href="/" class="home-btn">
+        <img src="{{ url_for('static', filename='images/home.jpg') }}" alt="முகப்பு" class="home-icon">
+    </a>
 
+    </nav>
+
+    <div class="container">
+         <h1>நேரடி உரை மொழிபெயர்ப்பு</h1>
+         <p>பதிவு செய்ய துவங்கி, பேசுங்கள், நிறுத்திய பிறகு இறுதி மொழிபெயர்ப்பு கீழே காண்பிக்கப்படும்.</p>
+         <hr>
         <div class="language-selectors">
             <div>
-                <label for="source_lang">Your Spoken Language (Input):</label>
+                <label for="source_lang">உங்கள் பேசும் மொழி :</label>
                 <select id="source_lang" name="source_lang" required>
-                    <option value="en">English (India)</option>
-                    <option value="ta">Tamil</option>
-                    <option value="hi">Hindi</option>
-                    <option value="kn">Kannada</option>
+                    <option value="IN">ஆங்கிலம்</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="hi">ஹிந்தி</option>
+                    <option value="kn">கன்னடம்</option>
                 </select>
             </div>
             <div>
-                <label for="target_lang">Script Language (Output):</label>
+                <label for="target_lang">உங்கள் பேசும் மொழி:</label>
                 <select id="target_lang" name="target_lang" required>
-                    <option value="ta">Tamil</option>
-                    <option value="en">English (India)</option>
-                    <option value="hi">Hindi</option>
-                    <option value="kn">Kannada</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="en">ஆங்கிலம்</option>
+                    <option value="hi">ஹிந்தி</option>
+                    <option value="kn">கன்னடம்</option>
                 </select>
             </div>
         </div>
 
         <div id="recordingControls">
-            <button id="startBtn">Start Recording 🔴</button>
-            <button id="stopBtn" disabled>Stop Recording ⏹️</button>
-            <p id="status">Press 'Start Recording'</p>
+            <button id="startBtn">பதிவை துவங்கு 🔴</button>
+            <button id="stopBtn" disabled>பதிவை நிறுத்து ⏹️</button>
+            <p id="status">'பதிவை துவங்கு' பொத்தானை அழுத்தவும்</p>
         </div>
 
         <div id="results" style="display: none;">
-            <h2>Final Translated Script</h2>
+            <h2>இறுதி மொழிபெயர்ப்பு உரை</h2>
             <div id="translationBox" class="dialog-box"></div>
-            <a id="downloadLink" href="#" style="display: none;" download>Download Script (.txt)</a>
+            <a id="downloadLink" href="#" style="display: none;" download>ஸ்கிரிப்டை பதிவிறக்கம் செய்யவும் (.txt)</a>
         </div>
     </div>
 

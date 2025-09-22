@@ -1,0 +1,174 @@
+/* General Layout */
+body {
+    /* margin: 0; */
+    font-family: "Noto Sans Tamil", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #eef2f7, #dbeafe);
+    color: #1e293b;
+}
+
+/* Container */
+/* Container */
+.container {
+    max-width: 850px;
+    margin: 3rem auto;
+    padding: 1.5rem 1.5rem;  /* slightly reduced padding */
+    background: #ffffffcc;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+/* Headings */
+h1, h2 {
+    color: #1d4ed8;
+    margin-top: 1rem;    /* reduced top margin */
+    margin-bottom: 1.5rem; /* reduced bottom margin */
+}
+
+/* Paragraph spacing */
+p {
+    margin-top: 0rem;   /* tightened spacing above paragraph */
+    margin-bottom: 1.5rem; /* slightly less below */
+    line-height: 1.5;
+}
+
+/* Labels */
+label {
+    font-weight: bold;
+    display: block;
+    margin: 1rem 0 0.5rem 0;
+    color: #334155;
+    font-size: 1rem;
+    margin-top: 0;
+}
+
+
+/* File Input */
+input[type="file"] {
+    display: block;
+    margin: 0.5rem auto 1.5rem auto;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 400px;
+    background: #f9fafb;
+}
+
+/* Language selectors */
+.language-selectors {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.language-selectors select {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    min-width: 150px;
+}
+
+/* Submit Button */
+#submitBtn {
+    padding: 0.9rem 1.8rem;
+    background: #2563eb;
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#submitBtn:hover {
+    background: #1e40af;
+    transform: translateY(-2px);
+}
+
+/* Results */
+#results {
+    margin-top: 2rem;
+}
+
+.dialog-box {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 1rem;
+    background: #f8fafc;
+    min-height: 120px;
+    margin-top: 1rem;
+    text-align: left;
+    font-size: 0.95rem;
+    word-break: break-word;
+}
+
+/* Download Link */
+#downloadLink {
+    display: inline-block;
+    margin-top: 1rem;
+    background: #16a34a;
+    color: white;
+    padding: 0.7rem 1.2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+#downloadLink:hover {
+    background: #15803d;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+    .language-selectors {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .language-selectors select {
+        width: 100%;
+    }
+
+    #submitBtn {
+        width: 100%;
+    }
+}
+/* Navigation Bar */
+/*nav {
+    width: 100%;
+    padding: 10rem 2rem;  
+    text-align: left;
+    display: inline;
+}
+
+nav .home-btn img.home-icon {
+    width: 50px;   
+    height: 50px;  
+    vertical-align: middle;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+nav .home-btn img.home-icon:hover {
+    transform: scale(1.5);
+}*/
+nav {
+    width: 100%;
+    padding: 1rem 2rem;
+    text-align: left;
+}
+
+nav .home-btn img.home-icon {
+    width: 50px;   /* adjust size */
+    height: 50px;  /* adjust size */
+    vertical-align: middle;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+nav .home-btn img.home-icon:hover {
+    transform: scale(1.5);
+}

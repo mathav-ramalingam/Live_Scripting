@@ -1,0 +1,77 @@
+/* General Layout */
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #eef2f7, #dbeafe);
+    color: #1e293b;
+    background-image: url('/static/images/11.jpg');
+    background-size: cover;
+
+    background-repeat: no-repeat;
+}
+
+/* Navigation Bar */
+nav {
+    /*background: #2563eb;*/
+    padding: 1.2rem;
+    text-align: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+nav h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+}
+
+/* Container */
+.container {
+    max-width: 850px;
+    margin: 4rem auto;
+    padding: 2.5rem;
+    text-align: center;
+   /* background: #ffffff;*/
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* Headings */
+h2 {
+    color: #1d4ed8;
+    margin-bottom: 2rem;
+    font-size: 1.6rem;
+}
+
+/* Buttons container at bottom */
+.menu-buttons {
+    position: fixed; /* fixed at bottom */
+    bottom: 20px; /* distance from bottom */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* one left, one right */
+    padding: 0 2rem; /* some horizontal padding */
+    box-sizing: border-box;
+    z-index: 10;
+}
+
+/* Individual buttons */
+.button-link {
+    padding: 1rem 1.5rem;
+    background: #2563eb;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+.button-link:hover {
+    background: #1e40af;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(30, 64, 175, 0.35);
+}
