@@ -59,19 +59,19 @@ h2 {
 /* Individual buttons */
 .button-link {
     padding: 1rem 1.5rem;
-    background: #2563eb;
+    background: #FFD372; /* professional teal */
     color: white;
     border-radius: 10px;
     text-decoration: none;
     font-weight: 600;
     font-size: 1.1rem;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
     transition: all 0.3s ease-in-out;
 }
 
 .button-link:hover {
-    background: #1e40af;
+    background: #075f57; /* darker teal on hover */
     transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(30, 64, 175, 0.35);
+    box-shadow: 0 6px 14px rgba(7, 95, 87, 0.35);
 }

@@ -31,10 +31,10 @@ print(f"Using device: {device}")
 whisper_model = whisper.load_model("medium", device=device)
 # whisper_model = whisper.load_model("small", device=device)
 
-# Dictionary to store audio chunks and other session data
+
 session_data = {}
 
-# --- Helper Functions (No changes needed) ---
+# Helper Functions 
 def transcribe_audio(audio_path: str, language: str) -> str:
     """Transcribes audio using Whisper."""
     try:
@@ -73,7 +73,7 @@ def save_text_to_file(text: str) -> str:
         f.write(text)
     return filename
 
-# --- Page Routes (No changes needed) ---
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -86,9 +86,7 @@ def upload_transcribe_page():
 def live_scripting_page():
     return render_template('live.html')
 
-# Updated process_audio_file function in app.py
 
-# Updated process_audio_file function in app.py
 
 @app.route('/process_file', methods=['POST'])
 def process_audio_file():
@@ -97,7 +95,7 @@ def process_audio_file():
     
     file = request.files['audio']
     target_lang = request.form['language']
-    # Get the user-selected source language
+
     source_lang_code = request.form['source_language']
     
     if file.filename == '':
@@ -105,10 +103,9 @@ def process_audio_file():
 
     temp_wav_path = None
     try:
-        # Step 1: Read the uploaded audio into memory
+        
         audio_stream = io.BytesIO(file.read())
         
-        # Step 2: Use pydub to handle decoding and resampling to a compatible format
         try:
             audio_segment = AudioSegment.from_file(audio_stream)
         except CouldntDecodeError:
@@ -116,20 +113,19 @@ def process_audio_file():
             
         audio_segment = audio_segment.set_frame_rate(16000).set_channels(1)
         
-        # Step 3: Export the corrected audio data to a temporary WAV file
+  
         temp_wav_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{uuid.uuid4().hex}.wav")
         audio_segment.export(temp_wav_path, format="wav")
         
-        # Step 4: Load the correctly formatted WAV file using Whisper's utility
+
         audio = whisper.load_audio(temp_wav_path)
 
-        # Step 5: Transcribe the audio using the user-selected source language
         if source_lang_code == "ta":
             result = whisper_model.transcribe(
             audio,
-            language=source_lang_code,   # Lock source language (Tamil = "ta")
-            task="transcribe",           # Don’t auto-translate
-            fp16=False,                  # Prevent slowdown on CPU
+            language=source_lang_code,   
+            task="transcribe",           
+            fp16=False,                  
             initial_prompt="இது தமிழ் உரையாடல்." if source_lang_code == "ta" else None
             )
             transcription = result["text"]
@@ -139,13 +135,12 @@ def process_audio_file():
             print("transcribe success")
 
         
-        # Step 6: Translate the transcription to the user's selected target language
         if source_lang_code != target_lang:
             translation = translate_text(transcription, source_lang_code, target_lang)
         else:
             translation = transcription
 
-        # Combine original and translated text for the file
+  
         combined_text = f"Original ({source_lang_code}): {transcription}\n\nTranslated ({target_lang}): {translation}"
         saved_filename = save_text_to_file(combined_text)
 
@@ -157,7 +152,7 @@ def process_audio_file():
         print(f"Error processing audio file: {e}")
         return jsonify({'error': str(e)}), 500
     finally:
-        # Step 7: Clean up the temporary file
+        
         if temp_wav_path and os.path.exists(temp_wav_path):
             os.remove(temp_wav_path)
 
@@ -165,7 +160,7 @@ def process_audio_file():
 def download_file(filename):
     return send_from_directory(app.config['TRANSCRIPTS_FOLDER'], filename, as_attachment=True)
 
-# --- Live Scripting with Socket.IO ---
+
 @socketio.on('connect')
 def handle_connect():
     sid = request.sid
@@ -178,14 +173,13 @@ def handle_start_session(data):
     session_data[sid]['source_lang'] = data.get('source_lang')
     session_data[sid]['target_lang'] = data.get('target_lang')
     print(f"Session {sid} started with languages: {session_data[sid]['source_lang']} -> {session_data[sid]['target_lang']}")
-    # Emit a confirmation to the client
+
     emit('session_started', {'status': 'Session started successfully'})
 
 @socketio.on('audio_chunk')
 def handle_audio_chunk(data):
     sid = request.sid
-    # Simply append the new audio chunk to the session's list
-    # Processing happens only when the session ends
+
     if sid in session_data:
         session_data[sid]['audio_chunks'].append(data)
 
@@ -199,7 +193,7 @@ def handle_end_session():
 
     print("End of session received. Processing audio...")
     
-    # Combine all accumulated audio chunks
+
     combined_audio_stream = io.BytesIO(b"".join(session_data[sid]['audio_chunks']))
     
     try:
@@ -212,28 +206,28 @@ def handle_end_session():
         source_lang = session_data[sid]['source_lang']
         target_lang = session_data[sid]['target_lang']
         
-        # Perform transcription and translation once at the end
+
         final_transcription = transcribe_audio(temp_wav_path, source_lang)
         final_translation = translate_text(final_transcription, source_lang, target_lang)
 
-        # Emit the final translation back to the client
+  
         emit('final_translation_update', {'translated_text': final_translation})
         
-        # Save to file
+
         final_text = f"Original ({source_lang}): {final_transcription}\n\nTranslated ({target_lang}): {final_translation}"
         saved_filename = save_text_to_file(final_text)
         
-        # Send the download link to the client
+    
         emit('download_ready', {'download_link': f"/download/{saved_filename}"})
 
-        # Clean up temporary file
+      
         os.remove(temp_wav_path)
         
     except Exception as e:
         print(f"Error processing audio on end session: {e}")
         emit('download_ready', {'download_link': ''})
     finally:
-        # Clean up session data
+        #
         if sid in session_data:
             del session_data[sid]
 
